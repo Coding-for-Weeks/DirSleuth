@@ -17,7 +17,7 @@ DirSleuth is a fast and efficient directory enumeration tool written in Go. It s
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/dirsleuth.git
+   git clone https://github.com/Coding-for-Weeks/dirsleuth.git
    cd dirsleuth
    ```
 2. Build the binary:
