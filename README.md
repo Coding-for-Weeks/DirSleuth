@@ -38,10 +38,9 @@ Run the tool with a target domain and a wordlist:
 ```
 
 ### Options
-- `-domain`: The target domain to scan.
-- `-wordlist`: Path to the wordlist file.
-- `-threads`: Number of threads to use for scanning (default: 10).
-- `-timeout`: Timeout in seconds for each request (default: 5).
+- `-d`: The target domain to scan.
+- `-w`: Path to the wordlist file.
+- `-t`: Number of threads to use for scanning (default: 10).
 
 ### Examples
 1. Scan with default settings:

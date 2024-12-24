@@ -38,3 +38,10 @@ coverage.out
 
 # Config files
 config.json
+
+# Ensure no source files are ignored
+!cmd/dirsleuth/main.go
+!internal/**/*.go
+!pkg/**/*.go
+!tests/**/*.go
+!examples/**/*.go
