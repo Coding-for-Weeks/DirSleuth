@@ -4,58 +4,65 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"sync"
+	"time"
 )
 
-func worker(urls <-chan string, wg *sync.WaitGroup, results chan<- string) {
+func worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results chan<- string) {
+	defer wg.Done()
 	for url := range urls {
-		resp, err := http.Get(url)
-		if err == nil && resp.StatusCode == 200 {
+		resp, err := client.Get(url)
+		if err != nil {
+			log.Printf("Error fetching URL %s: %s\n", url, err)
+			continue
+		}
+		if resp.StatusCode == 200 {
 			results <- url
 		}
-		if resp != nil {
-			resp.Body.Close()
-		}
+		resp.Body.Close()
 	}
-	wg.Done()
 }
 
 func main() {
 	var domain, wordlist string
 	var threads int
+	var useHTTPS bool
 
 	flag.StringVar(&domain, "u", "", "Target domain")
 	flag.StringVar(&wordlist, "w", "", "Wordlist file")
 	flag.IntVar(&threads, "t", 10, "Number of threads")
+	flag.BoolVar(&useHTTPS, "https", false, "Use HTTPS")
 	flag.Parse()
 
 	if domain == "" {
-		fmt.Println("Error: Target domain is required.")
-		os.Exit(1)
+		log.Fatal("Error: Target domain is required.")
 	}
 	if wordlist == "" {
-		fmt.Println("Error: Wordlist file is required.")
-		os.Exit(1)
+		log.Fatal("Error: Wordlist file is required.")
 	}
 
 	file, err := os.Open(wordlist)
 	if err != nil {
-		fmt.Printf("Error opening wordlist file: %s\n", err)
-		os.Exit(1)
+		log.Fatalf("Error opening wordlist file: %s\n", err)
 	}
 	defer file.Close()
 
 	urls := make(chan string, threads)
-	results := make(chan string)
+	results := make(chan string, threads)
 	var wg sync.WaitGroup
 	quit := make(chan struct{})
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
 
 	// Start workers
 	for i := 0; i < threads; i++ {
 		wg.Add(1)
-		go worker(urls, &wg, results)
+		go worker(client, urls, &wg, results)
 	}
 
 	// Read the wordlist and enqueue URLs
@@ -63,14 +70,18 @@ func main() {
 		defer close(urls)
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
+			scheme := "http"
+			if useHTTPS {
+				scheme = "https"
+			}
 			select {
-			case urls <- fmt.Sprintf("http://%s/%s", domain, scanner.Text()):
+			case urls <- fmt.Sprintf("%s://%s/%s", scheme, domain, scanner.Text()):
 			case <-quit:
 				return
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			fmt.Printf("Error reading wordlist: %s\n", err)
+			log.Printf("Error reading wordlist: %s\n", err)
 			close(quit)
 		}
 	}()
