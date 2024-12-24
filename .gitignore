@@ -1,0 +1,40 @@
+# Binaries
+DirSleuth
+
+# Build directories
+temp/
+logs/
+cache/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test binary
+*.test
+
+# Coverage files
+*.coverprofile
+*.cov
+coverage.out
+
+# Config files
+config.json
