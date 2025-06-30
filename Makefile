@@ -1,5 +1,5 @@
 BINARY_NAME=$(if $(CUSTOM_BINARY_NAME),$(CUSTOM_BINARY_NAME),DirSleuth)
-SRC=DirSleuth/cmd/main.go
+SRC=cmd/main.go
 
 .PHONY: all build run clean test
 
