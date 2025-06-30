@@ -41,6 +41,7 @@ func main() {
 	results := make(chan string, threads)
 	var wg sync.WaitGroup
 	quit := make(chan struct{})
+	var closeOnce sync.Once
 
 	client := &http.Client{
 		Timeout: 10 * time.Second,
@@ -69,7 +70,7 @@ func main() {
 		}
 		if err := scanner.Err(); err != nil {
 			log.Printf("Error reading wordlist: %s\n", err)
-			close(quit)
+			closeOnce.Do(func() { close(quit) })
 		}
 	}()
 
@@ -85,5 +86,5 @@ func main() {
 	}
 
 	// Signal quit to goroutines in case of early exit
-	close(quit)
+	closeOnce.Do(func() { close(quit) })
 }

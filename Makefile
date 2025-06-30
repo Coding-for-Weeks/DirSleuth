@@ -1,10 +1,9 @@
-# Makefile for GoBuster Clone
+		# Makefile for GoBuster Clone
 
 # Variables
 # Allows the binary name to be customized using CUSTOM_BINARY_NAME; defaults to 'DirSleuth' if not specified
 BINARY_NAME=$(if $(CUSTOM_BINARY_NAME),$(CUSTOM_BINARY_NAME),DirSleuth)
-SRC=main.go
-CONFIG?=config.json
+SRC=cmd/main.go
 
 .PHONY: all build run clean test
 
@@ -16,18 +15,14 @@ build:
 	@echo "Building the project..."
 	go build -o $(BINARY_NAME) $(SRC)
 
-# Run the project with configurable config file
+# Run the project
 run: build
 	@echo "Running the project..."
 	@if [ ! -f $(BINARY_NAME) ]; then \
-		echo "Error: Binary file $(BINARY_NAME) not found. Please build the project first."; \
-		exit 1; \
+	echo "Error: Binary file $(BINARY_NAME) not found. Please build the project first."; \
+	exit 1; \
 	fi
-	@if [ ! -f $(CONFIG) ]; then \
-		echo "Error: Configuration file $(CONFIG) not found."; \
-		exit 1; \
-	fi
-	./$(BINARY_NAME) -config $(CONFIG)
+	./$(BINARY_NAME)
 
 # Clean up build artifacts
 clean:

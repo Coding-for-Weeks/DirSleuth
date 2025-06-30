@@ -37,8 +37,6 @@ vendor/
 coverage.out
 
 # Config files
-config.json
-
 # Ensure no source files are ignored
 !cmd/main.go
 !internal/**/*.go

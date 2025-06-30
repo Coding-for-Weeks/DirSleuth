@@ -34,7 +34,7 @@ DirSleuth is a fast and efficient directory enumeration tool written in Go. It s
 ### Basic Command
 Run the tool with a target domain and a wordlist:
 ```bash
-./DirSleuth -domain example.com -wordlist /path/to/wordlist.txt
+./DirSleuth -d example.com -w /path/to/wordlist.txt
 ```
 
 ### Options
@@ -45,11 +45,11 @@ Run the tool with a target domain and a wordlist:
 ### Examples
 1. Scan with default settings:
    ```bash
-   ./DirSleuth -domain example.com -wordlist wordlist.txt
+    ./DirSleuth -d example.com -w wordlist.txt
    ```
 2. Customize threads and timeout:
    ```bash
-   ./DirSleuth -domain example.com -wordlist wordlist.txt -threads 20 -timeout 10
+    ./DirSleuth -d example.com -w wordlist.txt -t 20 -timeout 10
    ```
 
 ## Development
@@ -91,5 +91,5 @@ We welcome contributions! If you want to improve DirSleuth:
 DirSleuth is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it under the terms of the license.
 
 ---
-For questions, suggestions, or issues, please open an [issue](https://github.com/yourusername/dirsleuth/issues) or contact us directly.
+For questions, suggestions, or issues, please open an [issue](https://github.com/Coding-for-Weeks/dirsleuth/issues) or contact us directly.
 

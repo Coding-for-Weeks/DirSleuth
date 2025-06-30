@@ -1,4 +1,4 @@
-package main
+package worker_test
 
 import (
 	"net/http"
@@ -7,6 +7,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/Coding-for-Weeks/dirsleuth/internal/worker"
 )
 
 func TestWorker(t *testing.T) {
@@ -26,10 +28,11 @@ func TestWorker(t *testing.T) {
 
 	urls := make(chan string, 2)
 	results := make(chan string, 2)
+	quit := make(chan struct{})
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go worker(client, urls, &wg, results)
+	go worker.Worker(client, urls, &wg, results, quit)
 
 	// Send test URLs to the worker
 	urls <- server.URL + "/valid"
@@ -39,6 +42,7 @@ func TestWorker(t *testing.T) {
 	// Wait for the worker to finish
 	wg.Wait()
 	close(results)
+	close(quit)
 
 	// Check results
 	expected := server.URL + "/valid"
