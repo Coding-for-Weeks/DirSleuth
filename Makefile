@@ -1,21 +1,14 @@
-		# Makefile for GoBuster Clone
-
-# Variables
-# Allows the binary name to be customized using CUSTOM_BINARY_NAME; defaults to 'DirSleuth' if not specified
 BINARY_NAME=$(if $(CUSTOM_BINARY_NAME),$(CUSTOM_BINARY_NAME),DirSleuth)
-SRC=cmd/main.go
+SRC=DirSleuth/cmd/main.go
 
 .PHONY: all build run clean test
 
-# Default target
 all: build
 
-# Build the project
 build:
 	@echo "Building the project..."
 	go build -o $(BINARY_NAME) $(SRC)
 
-# Run the project
 run: build
 	@echo "Running the project..."
 	@if [ ! -f $(BINARY_NAME) ]; then \
@@ -24,7 +17,6 @@ run: build
 	fi
 	./$(BINARY_NAME)
 
-# Clean up build artifacts
 clean:
 	@echo "Cleaning up..."
 	@if [ -f $(BINARY_NAME) ]; then \
@@ -47,10 +39,3 @@ test:
 
 # Run all including tests
 testall: test build
-
-# Example for running specific tests or enabling verbose output
-# Usage:
-# make test TEST_FLAGS="-run TestSpecificFunction -v"
-# make test TEST_FLAGS="-bench ."  # Run benchmark tests
-# make test TEST_FLAGS="-count=1"  # Disable test result caching
-# make test TEST_FLAGS="-cover"  # Generate test coverage report
