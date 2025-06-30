@@ -1,9 +1,0 @@
-admin
-login
-images
-uploads
-test
-api
-dashboard
-config
-hidden

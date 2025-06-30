@@ -16,12 +16,14 @@ import (
 func main() {
 	var domain, wordlist string
 	var threads int
-	var useHTTPS bool
+	var useHTTPS, verbose bool
+
 
 	flag.StringVar(&domain, "d", "", "Target domain")
 	flag.StringVar(&wordlist, "w", "", "Wordlist file")
 	flag.IntVar(&threads, "t", 10, "Number of threads")
 	flag.BoolVar(&useHTTPS, "https", false, "Use HTTPS")
+	flag.BoolVar(&verbose, "v", false, "Enable verbose output")
 	flag.Parse()
 
 	if domain == "" {
@@ -44,13 +46,13 @@ func main() {
 	var closeOnce sync.Once
 
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: 30 * time.Second,
 	}
 
 	// Start workers
 	for i := 0; i < threads; i++ {
 		wg.Add(1)
-		go worker.Worker(client, urls, &wg, results, quit)
+		go worker.Worker(client, urls, &wg, results, quit, verbose)
 	}
 
 	// Read the wordlist and enqueue URLs

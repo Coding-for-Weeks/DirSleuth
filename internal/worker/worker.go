@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results chan<- string, quit <-chan struct{}) {
+func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results chan<- string, quit <-chan struct{}, verbose bool) {
 	defer wg.Done()
 	for {
 		select {
@@ -16,8 +16,13 @@ func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results
 			}
 			resp, err := client.Get(url)
 			if err != nil {
-				log.Printf("Error fetching URL %s: %s\n", url, err)
+				if verbose {
+					log.Printf("❌ [ERROR] %s → %s\n", url, err)
+				}
 				continue
+			}
+			if verbose {
+				log.Printf("[%d] %s\n", resp.StatusCode, url)
 			}
 			if resp.StatusCode == 200 {
 				results <- url

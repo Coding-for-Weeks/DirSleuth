@@ -1,41 +1,32 @@
-BINARY_NAME=$(if $(CUSTOM_BINARY_NAME),$(CUSTOM_BINARY_NAME),DirSleuth)
-SRC=cmd/main.go
+# Optional: allow overriding the binary name from CLI
+BINARY_NAME ?= DirSleuth
+SRC=cmd/dirsleuth/main.go
 
-.PHONY: all build run clean test
+.PHONY: all build run clean test testall
 
 all: build
 
 build:
-	@echo "Building the project..."
+	@echo "🔨 Building the project..."
 	go build -o $(BINARY_NAME) $(SRC)
 
 run: build
-	@echo "Running the project..."
+	@echo "🚀 Running the project..."
 	@if [ ! -f $(BINARY_NAME) ]; then \
-	echo "Error: Binary file $(BINARY_NAME) not found. Please build the project first."; \
-	exit 1; \
+		echo "❌ Error: Binary file $(BINARY_NAME) not found. Please build the project first."; \
+		exit 1; \
 	fi
 	./$(BINARY_NAME)
 
 clean:
-	@echo "Cleaning up..."
+	@echo "🧹 Cleaning up..."
 	@if [ -f $(BINARY_NAME) ]; then \
 		rm -f $(BINARY_NAME); \
 	fi
-	@if [ -d temp ]; then \
-		rm -rf temp; \
-	fi
-	@if [ -d logs ]; then \
-		rm -rf logs; \
-	fi
-	@if [ -d cache ]; then \
-		rm -rf cache; \
-	fi
+	@rm -rf temp logs cache
 
-# Run tests
 test:
-	@echo "Running tests..."
+	@echo "🧪 Running tests..."
 	go test ./... $(TEST_FLAGS)
 
-# Run all including tests
 testall: test build
