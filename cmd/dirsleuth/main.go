@@ -9,6 +9,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"strings"
 
 	"github.com/Coding-for-Weeks/dirsleuth/internal/worker"
 )
@@ -64,10 +65,17 @@ func main() {
 			if useHTTPS {
 				scheme = "https"
 			}
+			path := strings.TrimSpace(scanner.Text())
+
+			// Skip empty lines or accidental full URLs
+			if path == "" || strings.Contains(path, "http://") || strings.Contains(path, "https://") || strings.Contains(path, "localhost") {
+    			continue
+			}
+
 			select {
-			case urls <- fmt.Sprintf("%s://%s/%s", scheme, domain, scanner.Text()):
+			case urls <- fmt.Sprintf("%s://%s/%s", scheme, domain, path):
 			case <-quit:
-				return
+			    return
 			}
 		}
 		if err := scanner.Err(); err != nil {
@@ -82,7 +90,7 @@ func main() {
 		close(results)
 	}()
 
-	// Print results
+	// print results
 	for result := range results {
 		fmt.Println(result)
 	}
