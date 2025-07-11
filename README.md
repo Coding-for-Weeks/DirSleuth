@@ -7,6 +7,11 @@ DirSleuth is a fast and efficient directory enumeration tool written in Go. It s
 - Multithreaded scanning for improved performance.
 - Support for customizable wordlists.
 - Configurable options for request rate and timeout.
+- Custom User-Agent support.
+- Status code filtering (report only specified HTTP codes).
+- Graceful shutdown on interrupt (Ctrl+C).
+- Output in text or JSON format.
+- Input validation and wordlist sanitization.
 - Clean and modular codebase for easy contributions.
 
 ## Installation
@@ -41,15 +46,25 @@ Run the tool with a target domain and a wordlist:
 - `-d`: The target domain to scan.
 - `-w`: Path to the wordlist file.
 - `-t`: Number of threads to use for scanning (default: 10).
+- `-timeout`: HTTP request timeout in seconds (default: 30).
+- `-user-agent`: Custom User-Agent header (default: DirSleuth/1.0).
+- `-status`: Comma-separated HTTP status codes to report (e.g., 200,301,403; default: 200).
+- `-output`: Output format: `text` or `json` (default: text).
+- `-https`: Use HTTPS for requests.
+- `-v`: Enable verbose output.
 
 ### Examples
 1. Scan with default settings:
    ```bash
-    ./DirSleuth -d example.com -w wordlist.txt
+   ./DirSleuth -d example.com -w wordlist.txt
    ```
-2. Customize threads and timeout:
+2. Customize threads, timeout, and User-Agent:
    ```bash
-    ./DirSleuth -d example.com -w wordlist.txt -t 20 -timeout 10
+   ./DirSleuth -d example.com -w wordlist.txt -t 20 -timeout 10 -user-agent "MyScanner/2.0"
+   ```
+3. Report multiple status codes and output as JSON:
+   ```bash
+   ./DirSleuth -d example.com -w wordlist.txt -status "200,301,403" -output json
    ```
 
 ## Development
@@ -85,7 +100,7 @@ We welcome contributions! If you want to improve DirSleuth:
 ### Suggested Enhancements
 - Additional scanning modes.
 - Improved error handling.
-- Expanded output formats (e.g., JSON, XML).
+- Expanded output formats (e.g., XML).
 
 ## License
 DirSleuth is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it under the terms of the license.
