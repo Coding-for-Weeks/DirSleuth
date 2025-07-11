@@ -32,7 +32,7 @@ func TestWorker(t *testing.T) {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go worker.Worker(client, urls, &wg, results, quit)
+	go worker.Worker(client, urls, &wg, results, quit, false)
 
 	// Send test URLs to the worker
 	urls <- server.URL + "/valid"

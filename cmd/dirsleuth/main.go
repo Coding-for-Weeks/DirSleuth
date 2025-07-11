@@ -18,13 +18,14 @@ func main() {
 	var domain, wordlist string
 	var threads int
 	var useHTTPS, verbose bool
-
+	var timeout int
 
 	flag.StringVar(&domain, "d", "", "Target domain")
 	flag.StringVar(&wordlist, "w", "", "Wordlist file")
 	flag.IntVar(&threads, "t", 10, "Number of threads")
 	flag.BoolVar(&useHTTPS, "https", false, "Use HTTPS")
 	flag.BoolVar(&verbose, "v", false, "Enable verbose output")
+	flag.IntVar(&timeout, "timeout", 30, "HTTP request timeout in seconds")
 	flag.Parse()
 
 	if domain == "" {
@@ -47,7 +48,7 @@ func main() {
 	var closeOnce sync.Once
 
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: time.Duration(timeout) * time.Second,
 	}
 
 	// Start workers

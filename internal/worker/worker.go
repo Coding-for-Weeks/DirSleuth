@@ -21,13 +21,13 @@ func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results
 				}
 				continue
 			}
+			defer resp.Body.Close()
 			if verbose {
 				log.Printf("[%d] %s\n", resp.StatusCode, url)
 			}
 			if resp.StatusCode == 200 {
 				results <- url
 			}
-			resp.Body.Close()
 		case <-quit:
 			return
 		}
