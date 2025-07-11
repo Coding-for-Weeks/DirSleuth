@@ -6,7 +6,12 @@ import (
 	"sync"
 )
 
-func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results chan<- string, quit <-chan struct{}, verbose bool) {
+type Result struct {
+	URL        string `json:"url"`
+	StatusCode int    `json:"status_code"`
+}
+
+func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results chan<- Result, quit <-chan struct{}, verbose bool, userAgent string, codeMap map[int]bool) {
 	defer wg.Done()
 	for {
 		select {
@@ -14,7 +19,15 @@ func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results
 			if !ok {
 				return
 			}
-			resp, err := client.Get(url)
+			req, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				if verbose {
+					log.Printf("❌ [ERROR] %s → %s\n", url, err)
+				}
+				continue
+			}
+			req.Header.Set("User-Agent", userAgent)
+			resp, err := client.Do(req)
 			if err != nil {
 				if verbose {
 					log.Printf("❌ [ERROR] %s → %s\n", url, err)
@@ -25,8 +38,8 @@ func Worker(client *http.Client, urls <-chan string, wg *sync.WaitGroup, results
 			if verbose {
 				log.Printf("[%d] %s\n", resp.StatusCode, url)
 			}
-			if resp.StatusCode == 200 {
-				results <- url
+			if codeMap[resp.StatusCode] {
+				results <- Result{URL: url, StatusCode: resp.StatusCode}
 			}
 		case <-quit:
 			return
