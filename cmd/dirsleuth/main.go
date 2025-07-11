@@ -25,7 +25,7 @@ func isValidDomain(domain string) bool {
 }
 
 func main() {
-	var domain, wordlist, userAgent, outputFormat string
+	var domain, wordlist, userAgent, outputFormat, outFile string
 	var threads, timeout int
 	var useHTTPS, verbose bool
 	var statusCodes string
@@ -39,6 +39,7 @@ func main() {
 	flag.StringVar(&userAgent, "user-agent", "DirSleuth/1.0", "Custom User-Agent header")
 	flag.StringVar(&statusCodes, "status", "200", "Comma-separated HTTP status codes to report (e.g., 200,301,403)")
 	flag.StringVar(&outputFormat, "output", "text", "Output format: text or json")
+	flag.StringVar(&outFile, "out", "", "Output file (optional)")
 	flag.Parse()
 
 	if domain == "" || !isValidDomain(domain) {
@@ -124,11 +125,29 @@ func main() {
 		if outputFormat == "json" {
 			output = append(output, result)
 		} else {
+			output = append(output, result)
 			fmt.Printf("[%d] %s\n", result.StatusCode, result.URL)
 		}
 	}
 
-	if outputFormat == "json" {
+	if outFile != "" {
+		f, err := os.Create(outFile)
+		if err != nil {
+			log.Fatalf("Error creating output file: %s\n", err)
+		}
+		defer f.Close()
+		if outputFormat == "json" {
+			enc := json.NewEncoder(f)
+			enc.SetIndent("", "  ")
+			if err := enc.Encode(output); err != nil {
+				log.Fatalf("Error writing JSON output: %s\n", err)
+			}
+		} else {
+			for _, r := range output {
+				fmt.Fprintf(f, "[%d] %s\n", r.StatusCode, r.URL)
+			}
+		}
+	} else if outputFormat == "json" {
 		json.NewEncoder(os.Stdout).Encode(output)
 	}
 
