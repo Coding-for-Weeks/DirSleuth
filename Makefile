@@ -2,7 +2,7 @@
 BINARY_NAME ?= DirSleuth
 SRC=cmd/dirsleuth/main.go
 
-.PHONY: all build run clean test testall
+.PHONY: all build run clean test lint help
 
 all: build
 
@@ -16,7 +16,7 @@ run: build
 		echo "❌ Error: Binary file $(BINARY_NAME) not found. Please build the project first."; \
 		exit 1; \
 	fi
-	./$(BINARY_NAME)
+	./$(BINARY_NAME) -d example.com -w wordlist.txt -t 20 -timeout 30 -user-agent "DirSleuth/2.0" -status "200,301,403" -output json
 
 clean:
 	@echo "🧹 Cleaning up..."
@@ -29,4 +29,14 @@ test:
 	@echo "🧪 Running tests..."
 	go test ./... $(TEST_FLAGS)
 
-testall: test build
+lint:
+	@echo "🔎 Running linter..."
+	@golangci-lint run || echo "Install golangci-lint for linting support."
+
+help:
+	@echo "Available targets:"
+	@echo "  build    Build the binary"
+	@echo "  run      Build and run with example flags"
+	@echo "  test     Run Go tests"
+	@echo "  lint     Run Go linter (golangci-lint)"
+	@echo "  clean    Remove binary and temp files"
